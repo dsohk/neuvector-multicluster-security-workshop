@@ -108,17 +108,142 @@ NeuVector provides layered security & in this task we will be specifically looki
 
 We can also do Threat Detections against attach such as DDoS, DNS attacks on containers, Use DLP & WAF Sensor to inspect network traffic for Data Loss Prevention of sensitive data & detect OWASP Top 10 WAF attacks - **Subjective to Derek's creating a rogue container to simulate the attach which can send data to external network**
 
+#### Task 2.1 - Observing your application network flow.
 
+We have already done this previously in the task 1, while taking a look at the Network Tab. This give us a high level network communication flow. 
 
+![Cluster1-NeuVector-Network-Filter-pg3](../images/Cluster1-NeuVector-Network-Filter-pg3.png)
 
+Next step is to look at the containers which are part of the Application. 
 
 NeuVector > Policy > Groups > Filter `eshop` and this will filter what NeuVector has learned about the eshop application. 
 
 We will see all the Services within the namespace & the Policy Mode which they are in & other information. 
 
+NeuVector prefix the services with nv.container-name which you can easily notice in the sample image below.
+
 ![Cluster1-Policy-Groups-Filter-eshop](../images/Cluster1-Policy-Groups-Filter-eshop.PNG)
 
+Let's pick up one container to observe what NeuVector has learned about it. 
 
+In our example, let's pick the `nv.eshop-demo-online-boutique-frontend.eshop-demo`
+
+Members 
+
+![Cluster1-NeuVector-Policy-Groups-Members](../images/Cluster1-NeuVector-Policy-Groups-Members.PNG)
+
+Process Profiles Rules
+
+NeuVector shows all process which are spin up during container creation. 
+
+![Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules](../images/Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules.PNG)
+
+Network Rules
+
+![Cluster1-NeuVector-Policy-Network-Rules](../images/Cluster1-NeuVector-Policy-Network-Rules.PNG)
+
+If you wish to add DLP & WAF Rules, 
+
+![Cluster1-NeuVector-Policy-Add-DLP-WAF](../images/Cluster1-NeuVector-Policy-Add-DLP-WAF.png)
+
+DLP Rule added
+
+![Cluster1-NeuVector-Policy-DLP](../images/Cluster1-NeuVector-Policy-DLP.PNG)
+
+
+
+WAF Rules
+
+![Cluster1-NeuVector-Policy-WAF](../images/Cluster1-NeuVector-Policy-WAF.PNG)
+
+
+
+NeuVector learn all these under the Discovery Mode, which is the default mode of NeuVector. 
+
+![Cluster1-NeuVector-Configuration-New Service Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-New Service Mode-Default-Value.png)
+
+
+
+Service Group Mode Automation. 
+
+You can decide how long, you would want to run the Discovery Mode & if the no changes are made to the learn application, you can configure NeuVector to automatically move to Monitor or Protect Mode. 
+
+You can click on the i button for more detailed explanation. 
+
+![Cluster1-NeuVector-Configuration-ServiceGroup-Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-ServiceGroup-Mode-Default-Value.png)
+
+
+
+Network Service Policy Mode -  `set the network node at the global level`
+
+You can also set Network Service Policy Mode (Disabled by Default),
+
+![Cluster1-NeuVector-Configuration-Network-Service-Policy-Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-Network-Service-Policy-Mode-Default-Value.png)
+
+#### Task 2.2 - Realtime Process Profile Rule (whitelisting)
+
+Earlier we had identified in the discovery mode, what process did the container start with. 
+
+![Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules](../images/Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules.PNG)
+
+NeuVector continuously watch the process inside the container.  
+Let's assume, we need to make some configuration changes to the configuration file residing on container's volume. For this we need access to the shell. Let see if NeuVector can identify new shell process when we access the shell in realtime. 
+
+For this we need to go to Rancher 
+
+Rancher > Cluster Management > Cluster1 > Cluster > Workload > Pods > Filter eshop-demo namespace and we should see all containers running in the namespace. 
+
+Let's select the `eshop-demo-online-boutique-frontend-6798496f46-4sxcv` container and click on the 3 vertical dot on right hand side which further provide options. Select `ExecuteShell`  ![Cluster1-Access-to-frontend-conatainer-shell](../images/Cluster1-Access-to-frontend-conatainer-shell.png)
+
+Access to the container shell. 
+
+![Cluster1-Access-to-frontend-conatainer-shell-prompt-success](../images/Cluster1-Access-to-frontend-conatainer-shell-prompt-success.png)
+
+Now let validate if NeuVector was able to identify the new shell process and no surprise, we do see the new process in NeuVector
+
+NeuVector > Policy > Groups > Filter `frontend` > Process Profile Rules. 
+
+![Cluster1-NeuVector-learned-new-process-shell](../images/Cluster1-NeuVector-learned-new-process-shell.png)
+
+Task 2.3 - Realtime Network Rule (whitelisting)
+
+NeuVector > Policy > Groups > Filter `frontend` > Network Rules Rules. 
+
+NeuVector create the whitelisting rule under the Discovery mode. 
+
+![Cluster1-NeuVector-Policy-Network-Rules](../images/Cluster1-NeuVector-Policy-Network-Rules.PNG)
+
+In this way NeuVector can learn our application behaviour. we can continue to test the application & it will continue to learn & create whitelist rules. Once we happy with our testing we can have NeuVector change it's mode from Discovery to Monitor & or Protect 
+
+While you are testing, you can start with Discovery to learn & than process to Monitor Mode. Monitor mode will report any volition based on the whitelisting Process & Network Rules we have create in Discovery mode & report them as Security Event.  
+
+To change our application mode from Discovery to Monitor 
+
+ NeuVector > Policy > Groups > Filter `frontend` > Switch Mode
+
+![Cluster1-Switch-mode-discovery-monitor-pg1](../images/Cluster1-Switch-mode-discovery-monitor-pg1-1669313660415-28.png)
+
+Selection of Mode - `Monitor`
+
+![Cluster1-Switch-mode-discovery-monitor-pg2](../images/Cluster1-Switch-mode-discovery-monitor-pg2.PNG)
+
+Confirmation of Change of Mode to Monitor
+
+![Cluster1-Switch-mode-discovery-monitor-pg3](../images/Cluster1-Switch-mode-discovery-monitor-pg3.PNG)
+
+Going forward any violations in Process/Network will be alerted and we can see them in Notification > Security Events.
+
+If we toggle back to Rancher > Cluster Management > Cluster1 > Cluster > Workload > Pods > Filter eshop-demo namespace and we should see all containers running in the namespace. 
+
+Execute into the shell & try & execute a ping command to any website of your choice, it will result in success, however since we have not kept the application service in Monitor Mode,we expect to see Security Event notifying that ping was never part of whitelisting rule & hence this was a violation and would be reported accordingly.   
+
+![Cluster1-mode-monitor-proces-ping](../images/Cluster1-mode-monitor-proces-ping.png)
+
+Viewing Process Violation
+
+NeuVector > Notification > Security Event - Filter `www.google.com`
+
+![Cluster1-mode-monitor-notification-security-event-violation-ping](../images/Cluster1-mode-monitor-notification-security-event-violation-ping.png)
 
 
 
