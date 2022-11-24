@@ -1,12 +1,20 @@
 # Lab 3 - Manage multi-cluster security with NeuVector federation mode 
 
-
-
-## Task 1 - Setup NeuVector federation mode between cluster1 and cluster2
+Story line for the Lab. 
 
 
 
-Task 1.1 - Identify the federation ports and IP address for both cluster 1 & 2
+High Level task which we will achieve in this lab. 
+
+Task 1 - Setup NeuVector federation mode between cluster1 and cluster2
+
+Task 2 - Manage Multiple NeuVector Cluster via NeuVector Federation
+
+Task 3 - Create and Test Federated Policy (admission control policy) 
+
+## Task 1.1 - Setup NeuVector federation mode between cluster1 and cluster2
+
+### Task 1.1 - Identify the federation ports and IP address for both cluster 1 & 2
 
 Let identify the IP address first 
 
@@ -26,28 +34,6 @@ Similarly note down `neuvector-svc-controller-fed-managed`.  Note down your Port
 
 Task 1.1.1 - Repeat the steps for Cluster 2.
 
-
-
-cluster1(master)
-
-Node external IP: 4.224.45.13
-
-neuvector-svc-controller-fed-managed service nodeport number: 31416
-
-neuvector-svc-controller-fed-master 31409
-
-cluster2 (managed)
-
-node external IP: 4.224.44.165
-
-token: eyJzIjoiNC4yMjQuNDUuMTMiLCJwIjozMTQwOSwidCI6InMwNmtLaFpMSHdPZFV2WnlZejZtV0VCeE8yaUNYcVBUZnQ0V1VGckdvK0FYcjBXbHFDb2FiTnU4ZFNtZi9PVT0ifQ==
-
-neuvector-svc-controller-fed-managed  31116
-
-neuvector-svc-controller-fed-master 30412
-
-
-
 ### Task 1.2 - Configuring NV for multi-cluster federation
 
 The NeuVector console can be used to manage large enterprise multi-cluster and multi-cloud deployments. One cluster should be selected as the Master cluster, and other Remote clusters will then be able to join the Master. Once connected, the Master cluster can push Federated rules down to each remote cluster, which display as Federated rules in the consoles of each remote cluster.
@@ -56,9 +42,11 @@ There MUST be network connectivity between the controllers in each cluster on th
 
 For Port Requirement, you can refer URL- https://open-docs.neuvector.com/basics/installation/native#ports-and-port-mapping
 
-### Configuring the Master and Remote Clusters
+#### Task 1.2.1 - Configure Master and Remote Clusters
 
-Task 1.2.1 - Log into the console for the `Cluster1` which will be the `Master cluster`. In the upper right drop down menu, select Multiple Clusters and then click on `Promote` . This promotes the current cluster to be Primary Cluster in NeuVector Federation. 
+##### Configure Master - 
+
+Log into the console for the `Cluster1` which will be the `Master cluster`. In the upper right drop down menu, select Multiple Clusters and then click on `Promote` . This promotes the current cluster to be Primary Cluster in NeuVector Federation. 
 
 Provide the Cluster 1 which will be acting a Fed-Master, It's IP & Port which we have discovered in previous step and hit submit
 
@@ -78,6 +66,10 @@ After logging back into the console, select Multiple Clusters again from the upp
 
 ![Fed-Master-Token-Generation](../images/Fed-Master-Token-Generation.PNG)
 
+
+
+##### Configure Remote Cluster (Managed)
+
 Next step is to join the cluster2 to NeuVector Federation. 
 
 Task 1.2.2 - Log into the console for the `Cluster2` which will be the `Managed cluster`. In the upper right drop down menu, select Multiple Clusters and then click on `Join`. This joins an existing Primary Cluster. 
@@ -96,7 +88,9 @@ We should see the below page where we now see 2 cluster & its type clearly menti
 
 
 
-### Manage Multiple NeuVector Cluster 
+## Task 2 - Manage Multiple NeuVector Cluster 
+
+### Task 2. 1 - Access Master
 
 Cluster1 > Login into NeuVector UI 
 
@@ -112,11 +106,15 @@ NeuVector - Cluster1 View.
 
 ![Fed-View-Cluster1-fed-master](../images/Fed-View-Cluster1-fed-master.PNG)
 
-NeuVector - Cluster2 View. You can even see a message in the right hand bottom which indicate at you are re-directed to another cluster.
+### Task 2. 2 - Access Managed
+
+NeuVector - Cluster2 View.
+
+ You can even see a message in the right hand bottom which indicate at you are re-directed to another cluster.
 
 ![Fed-View-Cluster2-fed-managed](../images/Fed-View-Cluster2-fed-managed.PNG)
 
-## Task 2 - Create Federated Policy (admission control policy) in cluster1 (master)
+## Task 3 - Create Federated Policy (admission control policy) in cluster1 (master)
 
 Every Organization has a security posture which needs to be uniform across your IT including Kubernetes landscape. There is no flexibility in such cases. IT Admins / DevOps Team would find it difficult If these needs to be handled manually & via different tooling. 
 
@@ -133,6 +131,8 @@ Below are out of the box Federation Policies.
 ![Sample-Fed-Policy](../images/Sample-Fed-Policy.PNG)
 
 Let's create our first Federation Policy which would be an Admission Control one. 
+
+### Task 3.1 - Create a new Federation Policy (Admission Control). 
 
 Cluster1 - NeuVector - Admin/fedAdmin drop down > Federated Policy > Admission Control > Add
 
@@ -182,6 +182,8 @@ Now that we have created the Federation Policy, let's check the Federation Statu
 
 ![Fed-Admission-Control-Policy-Creation-Sync-status](../images/Fed-Admission-Control-Policy-Creation-Sync-status.PNG)
 
+### Task 3.1.2 - Validate Federation Policy Status across landspace. 
+
 Since the Cluster are in Sync, let check if the policy is reflecting in the `cluster2-fed-managed`. 
 
 From the Home like Icon `Cluster1-fed-maser`  you can use the drop down menu to `Cluster2-fed-managed` > Policy > Admission Control
@@ -191,6 +193,8 @@ We see the policy which was created via Federation on `Cluster1-fed-master` is n
 ![Fed-Manager-Admission-Control-deny-deployment-in-default-namespace-Sync-Success](../images/Fed-Manager-Admission-Control-deny-deployment-in-default-namespace-Sync-Success.png)
 
 Note - You can only view policy and hence operators cannot modify the policy. If any modification is required, it need to be done from Federation Master where the policy was created.
+
+### Task 3.2 - Enable the Admission Control on the clusters. 
 
 For the Admission Policy to take effect, we have one last step to do which is to enable the Admission Control Rule for local cluster. This can be done by toggle the status button which allow you have the admission policy in Monitor or Protect Mode based on your decision. 
 
@@ -210,7 +214,7 @@ If you incidentally keep the Mode= `Monitor`, the admission policy is enforced, 
 
 In next task, Task 3, we will test the Federated Admission Control Policy on any of the NeuVector Federated Cluster. We will be testing on `Cluster2`. The application used in our example is spring-petclinic app and we would be deploying the application via Rancher Fleet (CD) 
 
-## Task 3 - Verify deploy spring-petclinic app using fleet
+### Task 3.3 - Deploy Application to validate Admission Control Policy for application `spring-petclinic` using fleet
 
 What is Fleet ?
 
@@ -222,7 +226,7 @@ Click the top left 3-line bar icon to expand the navigation menu. Click **Global
 
 ![Fleet-Homepage](../images/Fleet-Homepage.PNG)
 
-Next step should be to configure Git Repo. 
+### Task 3.3.1 - Configure Rancher Fleet 
 
 In Rancher UI > `Global Apps` > `Continous Delivery` > `Git Repos` click on `Create`
 
