@@ -15,7 +15,7 @@ In this task, we are going to install NeuVector onto the 2 Kubernetes clusters p
 
 ![image-20221123200447841](../images/rancher-cluster-explorer-cluster1.png)
 
-4. Click on `Cluster Tools` at the botton of the left-hand side navigation menu.
+4. Click on `Cluster Tools` at the bottom of the left-hand side navigation menu.
 
 5. Find the NeuVector card and click `Install`.
 
@@ -136,11 +136,23 @@ In this task, we are going to deploy a microservices based application (an onlin
 
 10. Repeat this Task 3 for `cluster2` as well.
 
+Finally, before we move the next exercise, we create additional Namespace to test Admission Control policy for lab 3. 
+
+Rancher > Global Apps > Cluster Management > Cluster 2 > Explore > Project/Namespaces > Create 
+
+Name = `app-nginx`
+
+ Rancher > Global Apps > Cluster Management > Cluster 2 > Explore > Project/Namespaces >  Project: app-nginx > Create Namespace
+
+Name = `app-nginx`
+
+![image-20221128174753022](../images/image-20221128174753022.png)
+
 
 
 ## Conclusion
 
-This is the end of Lab 1. At this point, you should have deployed and configured NeuVector on both `cluster1` and `cluster2`. You should have also successfully deployed the microservices app `online-boutique` on these 2 clusters as well.
+This is the end of Lab 1. At this point, you should have deployed and configured NeuVector on both `cluster1` and `cluster2`. You should have also successfully deployed the microservices app `online-boutique` on these 2 clusters as well. You have also created additional namespace.
 
 Let's move to the next Lab to learn some powerful security features offered by NeuVector to protect your workload (`online-boutique` in this case.)
 
