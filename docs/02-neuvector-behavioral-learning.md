@@ -247,3 +247,8 @@ We have also seen how we have used DLP to protect our vital customer information
 Finally we have created our application security posture as `security as code`  exported and following imported on new cluster to ensure our application on the new cluster where it's deployed is secured from moment it's deployed. 
 
 In Lab 3, we will see how we can managed Multiple NeuVector Cluster using NeuVector Federation. 
+
+## Next Step
+
+- [Navigate to Lab 3](03-neuvector-federation-policy.md) 
+- [Return to Home Page](../README.md) 
