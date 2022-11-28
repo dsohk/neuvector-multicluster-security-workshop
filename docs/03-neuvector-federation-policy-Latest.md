@@ -170,13 +170,31 @@ Please see the Policy -> Federated Policy section for instructions on how to cre
 
 ![Fed-Rule-Admission-Control-deny-deployment-in-default-namespace](../images/Fed-Rule-Admission-Control-deny-deployment-in-default-namespace.PNG)
 
+Repeat the above steps for creation another Admission Control to restrict any new deloyment/pod in eshop
+
+Type = `Deny`, unless you need to enable it. 
+
+Comment = `deny deployment in default namespace`
+
+Criterion = Click on drop down & select `Namespace`
+
+Operator = `is one of`
+
+Value = `eshop-demo`
+
+Status = `Enabled`
+
+Click on `ADD` once completed filling all details. 
+
 Once the policy is created, you will see it under `Admission Control` with an corresponding ID, Criteria, Action & Type. 
 
+Once both the Federation Rules are create you should see them in the Admission Control page. 
+
+![2-Fed-Policy-Creation](../images/2-Fed-Policy-Creation-1669620879171-11.PNG)
+
+
+
 ![Fed-Rule-Admission-Control-deny-deployment-in-default-namespace-Success](../images/Fed-Rule-Admission-Control-deny-deployment-in-default-namespace-Success.png)
-
-Alternatively, you can also verify the same NeuVector > Policy > Admission Control 
-
-![Fed-Rule-Admission-Control-deny-deployment-in-default-namespace-Success-pg2](../images/Fed-Rule-Admission-Control-deny-deployment-in-default-namespace-Success-pg2.png)
 
 Now that we have created the Federation Policy, let's check the Federation Status. The cluster should be in sync & if they are then the Fed Policy should be sync on Cluster2-fed-managed & should also be visible under it. 
 
@@ -190,7 +208,7 @@ From the Home like Icon `Cluster1-fed-maser`  you can use the drop down menu to 
 
 We see the policy which was created via Federation on `Cluster1-fed-master` is now visible in `cluster2-fed-managed`
 
-![Fed-Manager-Admission-Control-deny-deployment-in-default-namespace-Sync-Success](../images/Fed-Manager-Admission-Control-deny-deployment-in-default-namespace-Sync-Success.png)
+![2-Fed-Policy-Creation-Cluster2](../images/2-Fed-Policy-Creation-Cluster2-1669620966972-13.PNG)
 
 Note - You can only view policy and hence operators cannot modify the policy. If any modification is required, it need to be done from Federation Master where the policy was created.
 
@@ -214,61 +232,55 @@ If you incidentally keep the Mode= `Monitor`, the admission policy is enforced, 
 
 In next task, Task 3, we will test the Federated Admission Control Policy on any of the NeuVector Federated Cluster. We will be testing on `Cluster2`. The application used in our example is spring-petclinic app and we would be deploying the application via Rancher Fleet (CD) 
 
-### Task 3.3 - Deploy Application to validate Admission Control Policy for application `spring-petclinic` using fleet
+### Task 3.3 - Deploy Application to validate Admission Control Policy
 
-What is Fleet ?
+Rancher > Global Apps > Cluster Management > Cluster2 > Explore > Workload > Deployments > Create 
 
-Fleet is GitOps at scale. Fleet is designed to manage up to a million clusters. It’s also lightweight enough that it works great for a [single cluster](https://fleet.rancher.io/single-cluster-install/) too, but it really shines when you get to a [large scale.](https://fleet.rancher.io/multi-cluster-install/) By large scale we mean either a lot of clusters, a lot of deployments, or a lot of teams in a single organization.
+namespace = `default`
 
-Fleet comes preinstalled in Rancher and is managed by the **Continuous Delivery** option in the Rancher UI.
+Image = `nginx:latest`
 
-Click the top left 3-line bar icon to expand the navigation menu. Click **Global Apps > Continuous Delivery** 
+We see error as our Federated Admission Control has taken effect and is preventing the deployment in the default namespace. 
 
-![Fleet-Homepage](../images/Fleet-Homepage.PNG)
+![fed-policy-deny-app-in-defaut-namespace](../images/fed-policy-deny-app-in-defaut-namespace.PNG)
 
-### Task 3.3.1 - Configure Rancher Fleet 
+Similarly, we if we try & deploy our application in `eshop-demo` namespace, it will fail again due to the Federated Admission Control policy. This helps us to ensure post the installation, there would be no more pod created which will help us to reduce our surface of attach. 
 
-In Rancher UI > `Global Apps` > `Continous Delivery` > `Git Repos` click on `Create`
-
-1. Give a name to your Git Rep `spring-eptclinic`
-
-2. Paste the Git Repo URL in `Repository URL`.
-
-   Sample Git Repo url is - https://github.com/dsohk/spring-petclinic-helmchart
-
-   ```
-   https://github.com/dsohk/spring-petclinic-helmchart
-   ```
-
-3. In the Branch Name type `main`
-
-   ![Fleet-Add-Git-Repo](../images/Fleet-Add-Git-Repo.PNG)
-
-1. Deploy To - Cluster2 as we are targeting specific cluster. If you want to all cluster or group of cluster this too can be done with help of cluster group which will be one additional step. 
-2. Provide a Namespace `default`
-3. Leave the rest as default & click on `Create`
-
-![Fleet-Add-Git-Repo-pg1](../images/Fleet-Add-Git-Repo-pg1-1669295309401-31.PNG)
-
-Once we hit create, it's start reconciling and created application bundles which will than be deployed at the target downstream cluster. 
-
-We expect to see deployment error as we have an admission control rule (Federated) in place via NeuVector which is denying application in default namespace, so we should soon see deployment error & yes we do . 
-
-Error `failed to create resource: admission webhook "neuvector-validating-admission-webhook.cattle-neuvector-system.svc" denied the request: Creation of Kubernetes Deployment is denied.`
-
-![Fleet-Deployment-SpringPet-Clininc_error](../images/Fleet-Deployment-SpringPet-Clininc_error.PNG)
-
-We can also validate in NeuVector under Risk Reports.  
+We can also validate any violation of admission control in NeuVector under Risk Reports.  
 
 Cluster1 - NeuVector - Admin/fedAdmin drop down > cluster2-fed-managed > Notification > Risk Reports
 
-Filter Admission.Control.Denied
+Filter `Denied`
 
-![NeuVector-Fed-Notification-RiskReport-Admission.control.denied](../images/NeuVector-Fed-Notification-RiskReport-Admission.control.denied.PNG)
+![admission-control-deny](../images/admission-control-deny.PNG)
 
-Let's look at the event for more details to understand the Admission Control Denied Rule and it would point to the federated rule we created. 
 
-![NeuVector-Fed-Notification-RiskReport-Admission.control.denied-pg2](../images/NeuVector-Fed-Notification-RiskReport-Admission.control.denied-pg2.PNG)
+
+Let's can take a closer look at the event for more details to understand the Admission Control Denied Rule and it would point to the federated rule we created. 
+
+Click on the `+` sign
+
+![federal-rule-deny-Event](../images/federal-rule-deny-Event.PNG)
+
+
+
+However, if we select any other namespace 
+
+Rancher > Global Apps > Cluster Management > Cluster2 > Explore > Workload > Deployments > Create 
+
+namespace = `app-nginx` (considering you already have the namespace created in advance)
+
+Image = `nginx:latest`
+
+ We will no longer see the deployment error as it's not matching any of the admission control policy (Federated & or Local Admission Control).
+
+![app-nginx-in-app-nginx-namespace-success](../images/app-nginx-in-app-nginx-namespace-success.PNG)
+
+Let's can take a closer look at the event for more details to understand the Admission Control Denied Rule and it would point to the federated rule we created. 
+
+Click on the `+` sign
+
+![No-Admission-Control-Rule-Match-Allowed](../images/No-Admission-Control-Rule-Match-Allowed.PNG)
 
 
 
