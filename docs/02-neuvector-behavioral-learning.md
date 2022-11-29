@@ -6,9 +6,10 @@ In this lab, we will experience first hand NeuVector capability to learn applica
 
 1. Observing your application network flow.
 
-We have already done this previously in the task 1, while taking a look at the Network Tab. This give us a high level network communication flow. 
+Ensure you are at the cluster explorer for cluster1 in Rancher Server.
+Navigate to the NeuVector menu on the left-hand side navigation bar in Rancher UI. Click the Full lifecycle Container Security link in the NeuVector box to open up a new browser tab accessing to the NeuVector user interface. You should see the interface like below.
 
-NeuVector > Network Activityps > Filter `eshop`
+NeuVector > Network Activity > Filter `eshop`
 
 ![Cluster1-NeuVector-Network-Filter-pg3](../images/Cluster1-NeuVector-Network-Filter-pg3.png)
 
