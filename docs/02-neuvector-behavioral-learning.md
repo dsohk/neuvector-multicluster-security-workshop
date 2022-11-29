@@ -17,7 +17,7 @@ NeuVector > Network Activity > Filter `eshop`
 
 ![Cluster1-NeuVector-Network-Activity-Filter-Applicationpod-Details](../images/Cluster1-NeuVector-Network-Activity-Filter-Applicationpod-Details.png)
 
-3. Click on NeuVector > Policy > Groups > Filter `eshop` . NeuVector will present all the pods which are spun up by the micro services application in the namespace `eshop-demo`. We will see all the Services within the namespace & the Policy Mode which they are in & other information. NeuVector default mode is Discover. NeuVector prefix the services with nv.container-name which you can easily notice in the sample image below.
+3. Click on NeuVector > Policy > Groups > Filter `eshop` . NeuVector will present all the pods which are spun up by the micro services application in the namespace `eshop-demo`. We will see all the Services within the namespace, its modes etc. NeuVector prefix the services with nv.container-name which you can easily notice in the sample image below.
 
 ![Cluster1-Policy-Groups-Filter-eshop](../images/Cluster1-Policy-Groups-Filter-eshop.PNG)
 
