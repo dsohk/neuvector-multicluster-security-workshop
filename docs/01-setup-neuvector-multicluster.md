@@ -133,8 +133,6 @@ In this task, we are going to deploy a microservices based application (an onlin
 
    ![image-20221123232410469](../images/rancher-online-boutique-frontend.png)
 
-10. Repeat this Task 3 for `cluster2` as well.
-
 Finally, before we move the next exercise, we create additional Namespace to test Admission Control policy for lab 3. 
 
 Rancher > Global Apps > Cluster Management > Cluster 2 > Explore > Project/Namespaces > Create 
