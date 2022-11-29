@@ -83,7 +83,7 @@ Before you start this task, please make sure you have successfully deployed NeuV
 
 
 
-## Task 3 - Deploy a microservices based application
+## Task 3 - Deploy a microservices based eshop application
 
 In this task, we are going to deploy a microservices based application (an online boutique ecommerce shop) into both `cluster1` and `cluster2` from Rancher Marketplace Catalogue.
 
@@ -114,9 +114,7 @@ In this task, we are going to deploy a microservices based application (an onlin
 
 ![image-20221123230310598](../images/rancher-online-boutique-install-1.png)
 
-7. Enter the `hostname` of the online-boutique. In this lab, the value of this hostname should be reference to the URL naming convention of the Rancher server instance.
-
-![image-20221123230826279](../images/rancher-online-boutique-install-2a.png)
+7. Uncheck the `Expose app using Layer 7 Load Balancer` option. We will navigate the online-boutique application via Rancher.
 
 8. Switch to the `Features` tab, uncheck the features that we don't plan to use in this lab exercise like below, and then click `Install` to deploy the online-boutique app onto the cluster.
 
@@ -124,11 +122,12 @@ In this task, we are going to deploy a microservices based application (an onlin
 
 9. After a few minutes, the `online-boutique` app should have been successfully deployed into the `eshop-demo` namespace. Let's now find the URL to access the online boutqiue portal in Rancher.
 
-   * Navigate to `Service Discovery` in the left navigation bar, click `Ingress`. 
+   * Navigate to `Service Discovery` in the left navigation bar, click `Services`. 
    * Ensure the namespace selected in the top menu is `Only User Namespace`.
-   * You should find the Ingress named `eshop-demo-online-boutique`. The URL next to it is the online boutique frontend URL.
+   * You should find the services named `eshop-online-boutique-frontend`. 
+   * The URL is highlighted by the link `http`.
 
-   ![image-20221123231924855](../images/rancher-online-boutique-install-completed.png)
+   ![image-20221129082223944](../images/rancher-online-boutique-install-completed.png)
 
    * Click on that URL to open up the frontend. You should see the following page.
 

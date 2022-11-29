@@ -24,9 +24,7 @@ You will be given lab instructions in exploring these technologies in a cloud-ba
 
    [Sslip](https://sslip.io) (, *.sslip.io)
 
-3. Watch previous demo on [Rancher private registry workshop](https://github.com/dsohk/rancher-private-registry-workshop/)   
-
-4. To spin this lab with your own personal/corporate Microsoft Azure Cloud account, please follow [this lab preparation guide with terraform automation script](https://github.com/dsohk/workshops/tree/main/scenarios/azure/rancher-neuvector)  link
+4. To spin this lab with your own personal/corporate Microsoft Azure Cloud account, please follow [this lab preparation guide with terraform automation script](https://github.com/dsohk/workshops/tree/main/scenarios/azure/rancher-with-n-rke2-clusters)  link
 
 5. Optional - Access to [SUSE Partner Portal](https://myaccount.suse.com/)
 
@@ -85,9 +83,9 @@ Now the login page will be displayed and proceed to authenticate yourself by ent
 
 This lab consists of 3 exercises. 
 
-1. Setup NeuVector for multicluster in federation mode
-2. Generate Security Policy Code for a microservices-based eCommerce App through behavioral learning
-3. Enforce multicluster security through federation policy
+1.  [Setup NeuVector from Rancher](docs/01-setup-neuvector-multicluster.md) 
+2.  [Exploring NeuVector Security](docs/02-neuvector-behavioral-learning.md)
+3.  [Setup NeuVector to manage multiple clusters with federation mode](docs/03-neuvector-federation-policy.md) 
 
 
 

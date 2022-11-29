@@ -28,7 +28,7 @@ NeuVector > Network Activityps > Filter `eshop`
 
 ![Cluster1-NeuVector-Policy-Network-Rules](../images/Cluster1-NeuVector-Policy-Network-Rules.PNG)
 
-#### Task 2 - Realtime Process Profile Rule (whitelisting)
+## Task 2 - Realtime Process Profile Rule (whitelisting)
 
 1. Earlier in discovery mode, we had identified what process did the container start when it spined up. NeuVector continuously watch the process inside the container
 
@@ -102,7 +102,7 @@ NeuVector > Notification > Security Event - Filter `www.google.com`
 
 
 
-### Task 3 - Securing Data with NeuVector DLP functionality 
+## Task 3 - Securing Data with NeuVector DLP functionality 
 
 Our Team is tasked to host this Online Boutique and ensure we protect customer sensitive data. NeuVector uses DLP and WAF uses the Deep Packet Inspection (DPI) to inspect the network payloads of connections for sensitive data violations. Let's see th is in action. 
 
