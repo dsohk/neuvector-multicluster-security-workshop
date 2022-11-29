@@ -151,9 +151,9 @@ Name = `app-nginx`
 
 ## Conclusion
 
-This is the end of Lab 1. At this point, you should have deployed and configured NeuVector on both `cluster1` and `cluster2`. You should have also successfully deployed the microservices app `online-boutique` on these 2 clusters as well. You have also created additional namespace.
+This is the end of Lab 1. At this point, you should have deployed and configured NeuVector on both `cluster1` and `cluster2`. You should have also successfully deployed the microservices app `online-boutique` on these 2 clusters as well. Additional namespace would have also created. 
 
-Let's move to the next Lab to learn some powerful security features offered by NeuVector to protect your workload (`online-boutique` in this case.)
+Let's move to the next Lab to learn some powerful security features offered by NeuVector to protect your workload (`online-boutique` in this case.). In this lab we will focus on NeuVector `Run Time` Security.
 
 
 
